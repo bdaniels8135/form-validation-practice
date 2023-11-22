@@ -49,23 +49,26 @@ function buildInstructionsSpanHtml(instructionsText) {
   return inputInstructionsSpanHtml;
 }
 
-function buildRequiredSpanHtml() {
-  const requiredSpanHtml = buildTextHtml("span", "*");
-  requiredSpanHtml.classList.add("required-tag");
-  return requiredSpanHtml;
-}
-
 function buildErrorSpanHtml() {
   const errorSpanHtml = buildTextHtml("span", "");
   errorSpanHtml.classList.add("error-message");
   return errorSpanHtml;
 }
 
-export function buildLabeledInputHtml(inputHtml, instructionsText) {
+export function buildLabeledInputHtml(
+  inputHtml,
+  instructionsText,
+  isRequired = false
+) {
   const labeledInputHtml = buildLabelHtml(inputHtml.id);
+  const instructionsSpanHtml = buildInstructionsSpanHtml(instructionsText);
+  if (isRequired) {
+    const requiredMark = buildTextHtml("span", "*");
+    requiredMark.classList.add("required-mark");
+    instructionsSpanHtml.appendChild(requiredMark);
+  }
   labeledInputHtml.append(
-    buildInstructionsSpanHtml(instructionsText),
-    buildRequiredSpanHtml(),
+    instructionsSpanHtml,
     inputHtml,
     buildErrorSpanHtml()
   );
@@ -76,12 +79,9 @@ export function buildCountrySelect(countriesList) {
   const countrySelectOptionsList = countriesList.map((country) =>
     buildSelectOption(country, country)
   );
-
   const countrySelectHtml = document.createElement("select");
   countrySelectHtml.append(...countrySelectOptionsList);
-
   countrySelectHtml.id = "country-select";
   countrySelectHtml.name = "country";
-
   return countrySelectHtml;
 }
