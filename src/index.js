@@ -1,4 +1,5 @@
 import "./index.css";
+import postalCodeValidations from "./postalCodeValidations";
 import {
   buildInputHtml,
   buildLabeledInputHtml,
@@ -7,79 +8,7 @@ import {
   wrapHtmlElements,
 } from "./htmlBuilders";
 
-const countryPostalCodeValidations = [
-  {
-    country: "Australia",
-    regex: /[0-9]{4}/,
-  },
-  {
-    country: "Austria",
-    regex: /[0-9]{4}/,
-  },
-  {
-    country: "Belgium",
-    regex: /[0-9]{4}/,
-  },
-  {
-    country: "Brazil",
-    regex: /[0-9]{5}[-]?[0-9]{3}/,
-  },
-  {
-    country: "Canada",
-    regex: /[A-Za-z][0-9][A-Za-z] [0-9][A-Za-z][0-9]/,
-  },
-  {
-    country: "Denmark",
-    regex: /[0-9]{3,4}/,
-  },
-  {
-    country: "Holland",
-    regex: /[1-9][0-9]{3}\s?[a-zA-Z]{2}/,
-  },
-  {
-    country: "Germany",
-    regex: /[0-9]{5}/,
-  },
-  {
-    country: "Hungary",
-    regex: /[0-9]{4}/,
-  },
-  {
-    country: "Italy",
-    regex: /[0-9]{5}/,
-  },
-  {
-    country: "Japan",
-    regex: /\d{3}-\d{4}/,
-  },
-  {
-    country: "Luxembourg",
-    regex: /(L\s*(-|—|–))\s*?[\d]{4}/,
-  },
-  {
-    country: "Poland",
-    regex: /[0-9]{2}-[0-9]{3}/,
-  },
-  {
-    country: "Spain",
-    regex: /((0[1-9]|5[0-2])|[1-4][0-9])[0-9]{3}/,
-  },
-  {
-    country: "Sweden",
-    regex: /\d{3}\s?\d{2}/,
-  },
-  {
-    country: "United Kingdom",
-    regex:
-      /[A-Za-z]{1,2}[0-9Rr][0-9A-Za-z]? [0-9][ABD-HJLNP-UW-Zabd-hjlnp-uw-z]{2}/,
-  },
-  {
-    country: "United States",
-    regex: /(\d{5}([-]\d{4})?)/,
-  },
-];
-
-const countriesList = countryPostalCodeValidations.map((item) => item.country);
+const countriesList = Object.keys(postalCodeValidations);
 
 const formInputsList = [
   {
@@ -113,15 +42,86 @@ const formInputsList = [
   },
 ];
 
+const requiredTagHtml = buildTextHtml("p", "*required");
+
 const formInputsHtmlList = formInputsList.map(
   ({ instructionsText, inputHtml, isRequired }) =>
     buildLabeledInputHtml(inputHtml, instructionsText, isRequired)
 );
 
-const requiredTagHtml = buildTextHtml("p", "*required");
+const submitBtn = buildInputHtml("submit", "submit-btn", "submit-btn");
 
-const form = wrapHtmlElements("form", requiredTagHtml, ...formInputsHtmlList);
+const form = wrapHtmlElements(
+  "form",
+  requiredTagHtml,
+  ...formInputsHtmlList,
+  submitBtn
+);
 
 const body = document.querySelector("body");
 
 body.appendChild(form);
+
+const emailInput = document.querySelector("#email-input");
+const countrySelect = document.querySelector("#country-select");
+const postalCodeInput = document.querySelector("#postal-code-input");
+const pwInput = document.querySelector("#pw-input");
+const pwVerificationInput = document.querySelector("#pw-verification-input");
+
+// This is the HTML standard
+function validateEmailAddress() {
+  const emailRegex =
+    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+  const result = emailRegex.test(emailInput.value);
+  const invalidMessage = "This is not a valid email address.";
+  return {
+    result,
+    invalidMessage,
+  };
+}
+
+// Upper, Lower, Number/Special Character and min of 8
+function validatePassword() {
+  const pwRegex =
+    /(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/;
+  const result = pwRegex.test(pwInput.value);
+  const invalidMessage =
+    "Min 8 characters including uppercase, lowercase and numbers/specials.";
+  return {
+    result,
+    invalidMessage,
+  };
+}
+
+function validatePasswordMatch() {
+  const result = pwInput.value === pwVerificationInput.value;
+  const invalidMessage = "Passwords do not match.";
+  return {
+    result,
+    invalidMessage,
+  };
+}
+
+function validatePostalCode() {
+  const countryPostalCodeRegex = postalCodeValidations[countrySelect.value];
+  const result = countryPostalCodeRegex.test(postalCodeInput.value);
+  const invalidMessage = "Must be a valid postal code in selected country.";
+  return {
+    result,
+    invalidMessage,
+  };
+}
+
+function addValidationToInput(input, validationFunc) {
+  input.addEventListener("focusout", (event) => {
+    const inputErrorSpan = event.target.nextSibling;
+    const { result, invalidMessage } = validationFunc();
+    if (result) inputErrorSpan.innerText = "\n";
+    else inputErrorSpan.textContent = invalidMessage;
+  });
+}
+
+addValidationToInput(emailInput, validateEmailAddress);
+addValidationToInput(postalCodeInput, validatePostalCode);
+addValidationToInput(pwInput, validatePassword);
+addValidationToInput(pwVerificationInput, validatePasswordMatch);
