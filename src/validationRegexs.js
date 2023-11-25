@@ -19,4 +19,12 @@ const postalCodeValidations = {
   "United States": /(\d{5}([-]\d{4})?)/,
 };
 
-export default postalCodeValidations;
+// This is the HTML standard
+const emailValidationRegex =
+  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+
+// Upper, Lower, Number/Special Character and min of 8
+const pwValidationRegex =
+  /(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/;
+
+export { postalCodeValidations, emailValidationRegex, pwValidationRegex };
