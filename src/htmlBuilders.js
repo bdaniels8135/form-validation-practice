@@ -22,7 +22,7 @@ export function buildLabelHtml(inputId) {
   return labelHtml;
 }
 
-export function buildInputHtml(type, id = null, name = null) {
+export function buildInputHtml(type, id, name) {
   const inputHtml = document.createElement("input");
   inputHtml.type = type;
   inputHtml.name = name;
@@ -50,7 +50,7 @@ function buildInstructionsSpanHtml(instructionsText) {
 }
 
 function buildErrorSpanHtml() {
-  const errorSpanHtml = buildTextHtml("span", "");
+  const errorSpanHtml = buildTextHtml("span", "\n");
   errorSpanHtml.classList.add("error-message");
   return errorSpanHtml;
 }
