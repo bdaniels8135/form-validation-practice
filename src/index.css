@@ -55,7 +55,6 @@ p {
 .error-message {
   color: red;
   padding: .25rem;
-  min-height: 1rem;
-  border: 1px solid red;
+  min-height: 2rem;
   font-size: .75rem;
 }

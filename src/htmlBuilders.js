@@ -50,7 +50,7 @@ function buildInstructionsSpanHtml(instructionsText) {
 }
 
 function buildErrorSpanHtml() {
-  const errorSpanHtml = buildTextHtml("span", "\n");
+  const errorSpanHtml = buildTextHtml("span", "");
   errorSpanHtml.classList.add("error-message");
   return errorSpanHtml;
 }
